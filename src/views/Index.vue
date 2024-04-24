@@ -156,7 +156,7 @@
                         <label for="telefone">Telefone</label>
                         <InputMask id="telefone" v-model="colaboradorSelecionado.telefone" required="true" mask="(99) 99999-9999" placeholder="(99) 99999-9999"
                             autofocus :invalid="submitted && !colaboradorSelecionado.telefone" />
-                        <small class="p-error" v-if="submitted && !colaboradorSelecionado.nome">Telefone é obrigatório.</small>
+                        <small class="p-error" v-if="submitted && !colaboradorSelecionado.telefone">Telefone é obrigatório.</small>
                     </div>
 
                 </div>
@@ -166,14 +166,14 @@
                     <div class="field">
                         <label for="data-nasc">Data de Nascimento</label>
                         <Calendar v-model="colaboradorSelecionado.dataNascimento" showIcon :showOnFocus="false" dateFormat="dd/mm/yy" inputId="data-nasc" autofocus :invalid="submitted && !colaboradorSelecionado.dataNascimento"  />
-                        <small class="p-error" v-if="submitted && !colaboradorSelecionado.nome">Data de nascimento é obrigatório.</small>
+                        <small class="p-error" v-if="submitted && !colaboradorSelecionado.dataNascimento">Data de nascimento é obrigatório.</small>
                     </div>
 
                     <div class="field">
                         <label for="tipo-colaborador">Tipo de Colaborador</label>
                         <Dropdown id="tipo-colaborador" v-model="colaboradorSelecionado.tipo" :options="tiposColaboradores" optionValue="tipo" optionLabel="descricao" placeholder="Selecione"
                         autofocus :invalid="submitted && !colaboradorSelecionado.tipo"/>
-                        <small class="p-error" v-if="submitted && !colaboradorSelecionado.nome">Tipo de colaborador é obrigatório.</small>
+                        <small class="p-error" v-if="submitted && !colaboradorSelecionado.tipo">Tipo de colaborador é obrigatório.</small>
                     </div>
 
                 </div>
@@ -353,11 +353,11 @@
 
 <script setup>
     import { ColaboradorService } from '@/service/ColaboradorService';
-import { TipoService } from '@/service/TipoService';
-import { ValeService } from '@/service/ValeService';
-import { FilterMatchMode } from 'primevue/api';
-import { useToast } from 'primevue/usetoast';
-import { onBeforeMount, onMounted, ref } from 'vue';
+    import { TipoService } from '@/service/TipoService';
+    import { ValeService } from '@/service/ValeService';
+    import { FilterMatchMode } from 'primevue/api';
+    import { useToast } from 'primevue/usetoast';
+    import { onBeforeMount, onMounted, ref } from 'vue';
 
     const toast = useToast();
 
@@ -471,63 +471,75 @@ import { onBeforeMount, onMounted, ref } from 'vue';
     const salvarColaborador = () => {
         submitted.value = true;
 
-        if (colaboradorSelecionado.value.id) {
+        if (colaboradorSelecionado.value.nome &&
+            colaboradorSelecionado.value.telefone &&
+            colaboradorSelecionado.value.dataNascimento &&
+            colaboradorSelecionado.value.pix.tipo &&
+            colaboradorSelecionado.value.pix.chave
+            ) {
 
-            colaboradorService.atualizarColaborador(colaboradorSelecionado.value.id, colaboradorSelecionado.value)
-                .then(() => {
-                    toast.add({severity:'success', summary: 'Sucesso', detail: 'Colaborador Atualizado.', life: 3000});
-                    getColaboradores();
-                }).catch(() => {
-                    toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível atualizar o colaborador', life: 3000});
-                })
-        } else {
+            if (colaboradorSelecionado.value.id) {
+                colaboradorService.atualizarColaborador(colaboradorSelecionado.value.id, colaboradorSelecionado.value)
+                    .then(() => {
+                        toast.add({severity:'success', summary: 'Sucesso', detail: 'Colaborador Atualizado.', life: 3000});
+                        getColaboradores();
+                    }).catch(() => {
+                        toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível atualizar o colaborador', life: 3000});
+                    })
+            } else {
 
-            colaboradorService.salvarColaborador(colaboradorSelecionado.value)
-                .then(() => {
-                    toast.add({severity:'success', summary: 'Sucesso', detail: 'Colaborador Cadastrado', life: 3000});
-                    getColaboradores();
-                }).catch(() => {
-                    toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível cadastrar o colaborador', life: 3000});
-                })
+                colaboradorService.salvarColaborador(colaboradorSelecionado.value)
+                    .then(() => {
+                        toast.add({severity:'success', summary: 'Sucesso', detail: 'Colaborador Cadastrado', life: 3000});
+                        getColaboradores();
+                    }).catch(() => {
+                        toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível cadastrar o colaborador', life: 3000});
+                    })
+            }
+
+            colaboradorDialog.value = false;
+
+            colaboradorSelecionado.value = {};
         }
-
-        colaboradorDialog.value = false;
-
-        colaboradorSelecionado.value = {};
     };
 
 
     const salvarVale = () => {
         submitted.value = true;
 
-        if (valeSelecionado.value.id) {
+        if (valeSelecionado.value.data &&
+            valeSelecionado.value.valor &&
+            valeSelecionado.value.tipo) {
 
-            valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
+            if (valeSelecionado.value.id) {
 
-            valeService.atualizarVale(valeSelecionado.value.id, valeSelecionado.value)
-                .then(() => {
-                    toast.add({severity:'success', summary: 'Sucesso', detail: 'Vale Atualizado.', life: 3000});
-                    getColaboradores();
-                }).catch(() => {
-                    toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível atualizar o vale', life: 3000});
-                })
+                valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
+
+                valeService.atualizarVale(valeSelecionado.value.id, valeSelecionado.value)
+                    .then(() => {
+                        toast.add({severity:'success', summary: 'Sucesso', detail: 'Vale Atualizado.', life: 3000});
+                        getColaboradores();
+                    }).catch(() => {
+                        toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível atualizar o vale', life: 3000});
+                    })
+            } else {
+
+                valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
+
+                valeService.salvarVale(valeSelecionado.value)
+                    .then(() => {
+                        toast.add({severity:'success', summary: 'Sucesso', detail: 'Vale Cadastrado', life: 3000});
+                        getColaboradores();
+                    }).catch(() => {
+                        toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível cadastrar o vale', life: 3000});
+                    })
+            }
+
+            valeDialog.value = false;
+
+            valeSelecionado.value = {};
         }
-        else {
 
-            valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
-
-            valeService.salvarVale(valeSelecionado.value)
-                .then(() => {
-                    toast.add({severity:'success', summary: 'Sucesso', detail: 'Vale Cadastrado', life: 3000});
-                    getColaboradores();
-                }).catch(() => {
-                    toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível cadastrar o vale', life: 3000});
-                })
-        }
-
-        valeDialog.value = false;
-
-        valeSelecionado.value = {};
     };
 
 
