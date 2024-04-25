@@ -111,7 +111,7 @@
 
                         <Column :exportable="false" style="min-width:8rem">
                             <template #body="slotProps">
-                                <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="confirmImprimirVale(slotProps.data)" />
+                                <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="todo" />
                                 <Button icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
                                 <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
                             </template>
@@ -142,17 +142,17 @@
 
         <div class="flex flex-column">
 
-            <div class="flex flex-row gap-3">
+            <div class="flex flex-column">
 
-                <div class="flex flex-column flex-1">
+                <div class="flex flex-row gap-3">
 
-                    <div class="field">
+                    <div class="field flex-1">
                         <label for="nome">Nome</label>
                         <InputText id="nome" v-model.trim="colaboradorSelecionado.nome" required="true" autofocus :invalid="submitted && !colaboradorSelecionado.nome" />
                         <small class="p-error" v-if="submitted && !colaboradorSelecionado.nome">Nome é obrigatório.</small>
                     </div>
 
-                    <div class="field">
+                    <div class="field flex-1">
                         <label for="telefone">Telefone</label>
                         <InputMask id="telefone" v-model="colaboradorSelecionado.telefone" required="true" mask="(99) 99999-9999" placeholder="(99) 99999-9999"
                             autofocus :invalid="submitted && !colaboradorSelecionado.telefone" />
@@ -161,18 +161,18 @@
 
                 </div>
 
-                <div class="flex flex-column flex-1">
+                <div class="flex flex-row gap-3">
 
-                    <div class="field">
+                    <div class="field flex-1">
                         <label for="data-nasc">Data de Nascimento</label>
                         <Calendar v-model="colaboradorSelecionado.dataNascimento" showIcon :showOnFocus="false" dateFormat="dd/mm/yy" inputId="data-nasc" autofocus :invalid="submitted && !colaboradorSelecionado.dataNascimento"  />
                         <small class="p-error" v-if="submitted && !colaboradorSelecionado.dataNascimento">Data de nascimento é obrigatório.</small>
                     </div>
 
-                    <div class="field">
+                    <div class="field flex-1">
                         <label for="tipo-colaborador">Tipo de Colaborador</label>
                         <Dropdown id="tipo-colaborador" v-model="colaboradorSelecionado.tipo" :options="tiposColaboradores" optionValue="tipo" optionLabel="descricao" placeholder="Selecione"
-                        autofocus :invalid="submitted && !colaboradorSelecionado.tipo"/>
+                            autofocus :invalid="submitted && !colaboradorSelecionado.tipo"/>
                         <small class="p-error" v-if="submitted && !colaboradorSelecionado.tipo">Tipo de colaborador é obrigatório.</small>
                     </div>
 
@@ -269,19 +269,20 @@
             <div>
                 <div class="field">
                     <label for="nome">Colaborador</label>
-                    <p><b>{{ colaboradorSelecionado.nome }}</b></p>
+                    <p><b>{{ valeSelecionado.colaboradorNome }}</b></p>
                 </div>
 
                 <div v-if="isAdmin" class="field">
                     <label for="data-vale">Data do Vale</label>
                     <Calendar :disabled="true" v-model="valeSelecionado.data" showIcon :showOnFocus="false" dateFormat="dd/mm/yy" inputId="data-vale"
                         autofocus :invalid="submitted && !valeSelecionado.data" />
-                    <small class="p-error" v-if="submitted && !colaboradorSelecionado.nome">Data do vale é obrigatório.</small>
+                    <small class="p-error" v-if="submitted && !valeSelecionado.data">Data do vale é obrigatório.</small>
                 </div>
 
                 <div class="field">
                     <label for="valor-vale">Valor</label>
-                    <InputText id="valor-vale" v-model.trim="valeSelecionado.valor" placeholder="R$ 0,00"required="true" autofocus :invalid="submitted && !valeSelecionado.valor" @input="formatValeInput(valeSelecionado)" />
+                    <InputText id="valor-vale" v-model.trim="valeSelecionado.valor" placeholder="R$ 0,00"required="true"
+                        autofocus :invalid="submitted && !valeSelecionado.valor" @input="formatValeInput(valeSelecionado)" />
                     <small class="p-error" v-if="submitted && !valeSelecionado.valor">Valor do vale é obrigatório.</small>
                 </div>
 
@@ -289,25 +290,13 @@
                     <label for="tipo-vale">Tipo de Vale</label>
                     <Dropdown id="tipo-vale" v-model="valeSelecionado.tipo" :options="tiposVales" optionValue="tipo" optionLabel="descricao" placeholder="Selecione"
                         autofocus :invalid="submitted && !valeSelecionado.tipo"/>
-                    <small class="p-error" v-if="submitted && !valeSelecionado.nome">Tipo de vale é obrigatório.</small>
+                    <small class="p-error" v-if="submitted && !valeSelecionado.tipo">Tipo de vale é obrigatório.</small>
                 </div>
             </div>
 
             <template #footer>
                 <Button label="Cancelar" icon="pi pi-times" text @click="hideValeDialog"/>
                 <Button label="Salvar" icon="pi pi-check" text @click="salvarVale" />
-
-<!-- 
-                <p:commandButton rendered="#{userFiles.autoPrintVale eq false}" value="Salvar" icon="pi pi-check" actionListener="#{colaboradorView.salvarVale}"
-                                    update="manage-vale-content" process="manage-vale-content @this"/>
-
-                    <p:commandButton rendered="#{userFiles.autoPrintVale eq true}" value="Salvar" icon="pi pi-check" actionListener="#{colaboradorView.salvarVale}"
-                                    update="manage-vale-content" process="manage-vale-content @this">
-                        <p:fileDownload value="#{fileDownloadView.file}"/>
-                    </p:commandButton>
-
-                    <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('valeDialog').hide()"
-                        class="ui-button-secondary" actionListener="#{colaboradorView.cancelarVale}" process="@this"/> -->
             </template>
 
     </Dialog>
@@ -388,6 +377,9 @@
 
     const expandedRows = ref({});
 
+    function todo() {
+        alert("Necessita Implementar...");
+    }
 
     onBeforeMount(() => {
         initFilters();
@@ -478,6 +470,18 @@
             colaboradorSelecionado.value.pix.chave
             ) {
 
+            switch (colaboradorSelecionado.value.pix.tipo) {
+                case 'CELULAR':
+                    colaboradorSelecionado.value.pix.chave = `+55${colaboradorSelecionado.value.pix.chave.replace(/\D/g, '')}`;
+                    break;
+                case 'CPF':
+                case 'CNPJ':
+                    colaboradorSelecionado.value.pix.chave = colaboradorSelecionado.value.pix.chave.replace(/\D/g, '');
+                    break;
+                default:
+                    break;
+            }
+
             if (colaboradorSelecionado.value.id) {
                 colaboradorService.atualizarColaborador(colaboradorSelecionado.value.id, colaboradorSelecionado.value)
                     .then(() => {
@@ -507,9 +511,7 @@
     const salvarVale = () => {
         submitted.value = true;
 
-        if (valeSelecionado.value.data &&
-            valeSelecionado.value.valor &&
-            valeSelecionado.value.tipo) {
+        if (valeSelecionado.value.valor) {
 
             if (valeSelecionado.value.id) {
 
