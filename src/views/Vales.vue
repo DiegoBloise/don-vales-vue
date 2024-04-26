@@ -38,19 +38,23 @@
                 </div>
             </template>
 
-            <Column field="data" header="Data" sortable></Column>
+            <Column field="data" header="Data" sortable>
+                <template #body="slotProps">
+                    {{ util.formatData(slotProps.data.data) }}
+                </template>
+            </Column>
 
             <Column field="colaboradorNome" header="Colaborador" sortable></Column>
 
             <Column field="valor" header="Valor" sortable>
                 <template #body="slotProps">
-                    {{ formatCurrency(slotProps.data.valor) }}
+                    {{ util.formatCurrency(slotProps.data.valor) }}
                 </template>
             </Column>
 
             <Column :exportable="false" style="min-width:8rem">
                 <template #body="slotProps">
-                    <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="todo" />
+                    <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="util.todo" />
                     <Button v-if="isAdmin" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
                     <Button v-if="isAdmin" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
                 </template>
@@ -110,7 +114,7 @@
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
             <span v-if="valeSelecionado">Tem certeza que deseja remover o vale de <b>{{ valeSelecionado.colaboradorNome }}</b>
-                no valor de <b>{{formatCurrency(valeSelecionado.valor)}}</b>?</span>
+                no valor de <b>{{util.formatCurrency(valeSelecionado.valor)}}</b>?</span>
         </div>
 
         <template #footer>
@@ -128,9 +132,11 @@
     import { FilterMatchMode } from 'primevue/api';
     import { useToast } from 'primevue/usetoast';
     import { onBeforeMount, onMounted, ref } from 'vue';
+    import { Util } from '@/service/Util';
 
     const toast = useToast();
 
+    const util = new Util();
     const colaboradorService = new ColaboradorService();
     const valeService = new ValeService();
     const tipoService = new TipoService
@@ -146,19 +152,14 @@
     const colaboradorSelecionado = ref();
     const valeSelecionado = ref();
 
-    const isAdmin = ref(false);
+    const isAdmin = ref(true);
 
     const filters = ref({});
     const submitted = ref(false);
 
-    function todo() {
-        alert("Necessita Implementar...");
-    }
-
     onBeforeMount(() => {
         initFilters();
     });
-
 
     onMounted(() => {
         getVales();
@@ -172,13 +173,11 @@
             .catch((error) => (console.error('Erro ao obter tiposVales:', error)));
     });
 
-
     const getVales = () => {
         valeService.getVales()
             .then((data) => (vales.value = data))
             .catch((error) => (console.error('Erro ao obter vales:', error)));
     }
-
 
     const initFilters = () => {
         filters.value = {
@@ -186,26 +185,23 @@
         };
     };
 
-
-    const formatCurrency = (value) => {
-        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    };
-
-
     const hideValeDialog = () => {
         valeDialog.value = false;
         submitted.value = false;
     };
-
 
     const salvarVale = () => {
         submitted.value = true;
 
         if (valeSelecionado.value.valor) {
 
-            if (valeSelecionado.value.id) {
+            valeSelecionado.value.valor = util.realParaFloat(valeSelecionado.value.valor);
 
-                valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
+            if(valeSelecionado.value.data) {
+                valeSelecionado.value.data = util.formatLocalDate(valeSelecionado.value.data);
+            }
+
+            if (valeSelecionado.value.id) {
 
                 valeService.atualizarVale(valeSelecionado.value.id, valeSelecionado.value)
                     .then(() => {
@@ -215,8 +211,6 @@
                         toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível atualizar o vale', life: 3000});
                     })
             } else {
-
-                valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
 
                 valeService.salvarVale(valeSelecionado.value)
                     .then(() => {
@@ -234,24 +228,22 @@
 
     };
 
-
     const novoVale = () => {
         valeSelecionado.value = {}
         submitted.value = false;
         valeDialog.value = true;
     };
 
-
     const editarVale = (vale) => {
-        valeSelecionado.value = {...vale};
+        valeSelecionado.value = JSON.parse(JSON.stringify(vale));
 
         colaboradorSelecionado.value = {...colaboradores.value.find(colab => colab.id === valeSelecionado.value.colaboradorId)};
 
-        valeSelecionado.value.valor = floatParaReal(valeSelecionado.value.valor);
+        valeSelecionado.value.valor = util.floatParaReal(valeSelecionado.value.valor);
+        valeSelecionado.value.data = util.formatData(valeSelecionado.value.data);
 
         valeDialog.value = true;
     };
-
 
     const confirmDeleteVale = (vale) => {
         valeSelecionado.value = {...vale};
@@ -260,7 +252,6 @@
 
         deleteValeDialog.value = true;
     };
-
 
     const deletarVale = () => {
         valeService.deletarVale(valeSelecionado.value.id)
@@ -276,44 +267,8 @@
         colaboradorSelecionado.value = {};
     };
 
-
     const formatValeInput = () => {
-        valeSelecionado.value.valor = formatMoneyInput(valeSelecionado.value.valor);
-    }
-
-
-    const formatMoneyInput = (value) => {
-        var newValue = value.replace(/[^\d]/g, '');
-
-        newValue = newValue.replace(/^0+/, '');
-
-        while (newValue.length < 3) {
-            newValue = '0' + newValue;
-        }
-
-        var integerPart = newValue.slice(0, -2) || '0';
-        var decimalPart = newValue.slice(-2);
-
-        newValue = 'R$ ' + integerPart + ',' + decimalPart;
-
-        return newValue;
-    }
-
-
-    function realParaFloat(valorReal) {
-        const valorSemSimbolo = valorReal.replace(/[^\d,]/g, '');
-        const valorComPonto = valorSemSimbolo.replace(',', '.');
-        return parseFloat(valorComPonto);
-    }
-
-
-    function floatParaReal(valorFloat) {
-        const valorFormatado = parseFloat(valorFloat).toFixed(2);
-        const partes = valorFormatado.split('.');
-        const parteInteira = partes[0].split('').reverse().reduce((acc, num, i) => {
-            return num + (i && i % 3 === 0 ? '.' : '') + acc;
-        }, '');
-        return 'R$ ' + parteInteira + ',' + partes[1];
+        valeSelecionado.value.valor = util.formatMoneyInput(valeSelecionado.value.valor);
     }
 
 </script>

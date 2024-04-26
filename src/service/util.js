@@ -1,30 +1,65 @@
-$(document).ready(function () {
-    // Configuração do widget para InputNumber
-    $('.moneyInput').on('input', function (event) {
-        formatMoneyInput(event.target);
-    });
-});
+export class Util {
+    formatMoneyInput(value) {
+        var newValue = value.replace(/[^\d]/g, '');
 
+        newValue = newValue.replace(/^0+/, '');
 
+        while (newValue.length < 3) {
+            newValue = '0' + newValue;
+        }
 
-function formatMoneyInput(input) {
-    var value = input.value.replace(/[^\d]/g, '');
+        var integerPart = newValue.slice(0, -2) || '0';
+        var decimalPart = newValue.slice(-2);
 
-    // Remove zeros à esquerda
-    value = value.replace(/^0+/, '');
+        newValue = 'R$ ' + integerPart + ',' + decimalPart;
 
-    // Adiciona zeros à esquerda, se necessário
-    while (value.length < 3) {
-        value = '0' + value;
+        return newValue;
     }
 
-    // Divide o valor em parte inteira e decimal
-    var integerPart = value.slice(0, -2) || '0';
-    var decimalPart = value.slice(-2);
+    realParaFloat(valorReal) {
+        const valorSemSimbolo = valorReal.replace(/[^\d,]/g, '');
+        const valorComPonto = valorSemSimbolo.replace(',', '.');
+        return parseFloat(valorComPonto);
+    }
 
-    // Formata o valor com vírgula e adiciona o símbolo de moeda
-    var formattedValue = 'R$ ' + integerPart + ',' + decimalPart;
+    floatParaReal(valorFloat) {
+        const valorFormatado = parseFloat(valorFloat).toFixed(2);
+        const partes = valorFormatado.split('.');
+        const parteInteira = partes[0].split('').reverse().reduce((acc, num, i) => {
+            return num + (i && i % 3 === 0 ? '.' : '') + acc;
+        }, '');
+        return 'R$ ' + parteInteira + ',' + partes[1];
+    }
 
-    // Atualiza o valor no campo
-    input.value = formattedValue;
+    formatData(data) {
+        const partes = data.split('-');
+
+        const ano = partes[0];
+        const mes = partes[1];
+        const dia = partes[2];
+
+        const dataFormatada = `${dia}/${mes}/${ano}`;
+
+        return dataFormatada;
+    }
+
+    formatLocalDate(data) {
+        const partes = data.split('/');
+
+        const dia = partes[0];
+        const mes = partes[1];
+        const ano = partes[2];
+
+        const dataFormatada = `${ano}-${mes}-${dia}`;
+
+        return dataFormatada;
+    }
+
+    formatCurrency(value) {
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    };
+
+    todo() {
+        alert("Necessita Implementar...");
+    }
 }

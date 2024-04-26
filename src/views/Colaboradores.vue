@@ -34,12 +34,12 @@
 
             <template #start>
                 <Button label="Novo Colaborador" icon="pi pi-plus" severity="success" class="mr-2" @click="novoColaborador" />
-                <Button label="Remover" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!colaboradoresSelecionados || !colaboradoresSelecionados.length" />
+                <Button v-if="isAdmin" label="Remover" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!colaboradoresSelecionados || !colaboradoresSelecionados.length" />
             </template>
 
             <template #end>
                 <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Importar" chooseLabel="Importar" class="mr-2 inline-block" />
-                <Button label="Exportar" icon="pi pi-download" severity="help" @click="exportCSV($event)"  />
+                <Button v-if="isAdmin" label="Exportar" icon="pi pi-download" severity="help" @click="exportCSV($event)"  />
             </template>
 
         </Toolbar>
@@ -76,7 +76,7 @@
 
             <Column expander style="width: 5rem" />
 
-            <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
+            <Column v-if="isAdmin" selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
 
             <Column field="nome" header="Nome" sortable style="min-width:16rem"></Column>
 
@@ -94,8 +94,8 @@
             <Column :exportable="false" style="min-width:8rem">
                 <template #body="slotProps">
                     <Button icon="pi pi-ticket" outlined rounded class="mr-2" @click="novoVale(slotProps.data)" />
-                    <Button icon="pi pi-pencil" outlined rounded severity="warning"class="mr-2" @click="editarColaborador(slotProps.data)" />
-                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteColaborador(slotProps.data)" />
+                    <Button v-if="isAdmin" icon="pi pi-pencil" outlined rounded severity="warning"class="mr-2" @click="editarColaborador(slotProps.data)" />
+                    <Button v-if="isAdmin" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteColaborador(slotProps.data)" />
                 </template>
             </Column>
 
@@ -103,26 +103,30 @@
                 <div class="p-3">
                     <h5>Vales de {{ slotProps.data.nome }}</h5>
                     <DataTable :value="slotProps.data.vales">
-                        <Column field="data" header="Data" sortable></Column>
+                        <Column field="data" header="Data" sortable>
+                            <template #body="slotProps">
+                                {{ util.formatData(slotProps.data.data) }}
+                            </template>
+                        </Column>
 
                         <Column field="valor" header="Valor" sortable>
                             <template #body="slotProps">
-                                {{ formatCurrency(slotProps.data.valor) }}
+                                {{ util.formatCurrency(slotProps.data.valor) }}
                             </template>
                         </Column>
 
                         <Column :exportable="false" style="min-width:8rem">
                             <template #body="slotProps">
-                                <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="todo" />
-                                <Button icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
-                                <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
+                                <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="util.todo" />
+                                <Button v-if="isAdmin" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
+                                <Button v-if="isAdmin" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
                             </template>
                         </Column>
 
                         <ColumnGroup type="footer">
                             <Row>
                                 <Column footer="Total:" footerStyle="text-align:right" />
-                                <Column colspan="2" :footer="slotProps.data.totalVales" />
+                                <Column colspan="2" :footer="util.formatCurrency(slotProps.data.totalVales)" />
                             </Row>
                         </ColumnGroup>
                     </DataTable>
@@ -256,9 +260,6 @@
 
     </Dialog>
 
-
-
-
     <Dialog
         v-model:visible="valeDialog"
         header="Lançamento de Vale"
@@ -331,7 +332,7 @@
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
             <span v-if="valeSelecionado">Tem certeza que deseja remover o vale de <b>{{ colaboradorSelecionado.nome }}</b>
-                no valor de <b>{{formatCurrency(valeSelecionado.valor)}}</b>?</span>
+                no valor de <b>{{util.formatCurrency(valeSelecionado.valor)}}</b>?</span>
         </div>
 
         <template #footer>
@@ -349,9 +350,11 @@
     import { FilterMatchMode } from 'primevue/api';
     import { useToast } from 'primevue/usetoast';
     import { onBeforeMount, onMounted, ref } from 'vue';
+    import { Util } from '@/service/Util';
 
     const toast = useToast();
 
+    const util = new Util();
     const colaboradorService = new ColaboradorService();
     const valeService = new ValeService();
     const tipoService = new TipoService
@@ -372,21 +375,16 @@
     const valeSelecionado = ref();
     const colaboradoresSelecionados = ref();
 
-    const isAdmin = ref(false);
+    const isAdmin = ref(true);
 
     const filters = ref({});
     const submitted = ref(false);
 
     const expandedRows = ref({});
 
-    function todo() {
-        alert("Necessita Implementar...");
-    }
-
     onBeforeMount(() => {
         initFilters();
     });
-
 
     onMounted(() => {
         getColaboradores();
@@ -404,7 +402,6 @@
             .catch((error) => (console.error('Erro ao obter tiposVales:', error)));
     });
 
-
     const getColaboradores = () => {
         colaboradorService.getColaboradores()
             .then((data) => (colaboradores.value = data))
@@ -412,56 +409,42 @@
             .catch((error) => (console.error('Erro ao obter colaboradores:', error)));
     }
 
-
     const initFilters = () => {
         filters.value = {
             global: { value: null, matchMode: FilterMatchMode.CONTAINS }
         };
     };
 
-
     const onRowExpand = (event) => {
         //toast.add({ severity: 'info', summary: 'Product Expanded', detail: event.data.name, life: 3000 });
     };
-
 
     const onRowCollapse = (event) => {
         //toast.add({ severity: 'success', summary: 'Product Collapsed', detail: event.data.name, life: 3000 });
     };
 
-
     const expandAll = () => {
         expandedRows.value = colaboradores.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
     };
 
-
     const collapseAll = () => {
         expandedRows.value = null;
     };
-
-
-    const formatCurrency = (value) => {
-        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    };
-
 
     const setTipoPix = (value) => {
         colaboradorSelecionado.value.pix.tipo = value;
         colaboradorSelecionado.value.pix.chave = null;
     };
 
-
     const hideColaboradorDialog = () => {
         colaboradorDialog.value = false;
         submitted.value = false;
     };
 
-
     const hideValeDialog = () => {
         valeDialog.value = false;
         submitted.value = false;
     };
-
 
     const salvarColaborador = () => {
         submitted.value = true;
@@ -498,15 +481,18 @@
         }
     };
 
-
     const salvarVale = () => {
         submitted.value = true;
 
         if (valeSelecionado.value.valor) {
 
-            if (valeSelecionado.value.id) {
+            valeSelecionado.value.valor = util.realParaFloat(valeSelecionado.value.valor);
 
-                valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
+            if(valeSelecionado.value.data) {
+                valeSelecionado.value.data = util.formatLocalDate(valeSelecionado.value.data);
+            }
+
+            if (valeSelecionado.value.id) {
 
                 valeService.atualizarVale(valeSelecionado.value.id, valeSelecionado.value)
                     .then(() => {
@@ -516,8 +502,6 @@
                         toast.add({severity:'error', summary: 'Erro', detail: 'Não foi possível atualizar o vale', life: 3000});
                     })
             } else {
-
-                valeSelecionado.value.valor = realParaFloat(valeSelecionado.value.valor);
 
                 valeService.salvarVale(valeSelecionado.value)
                     .then(() => {
@@ -535,7 +519,6 @@
 
     };
 
-
     const novoVale = (colaborador) => {
         colaboradorSelecionado.value = {...colaborador};
         valeSelecionado.value = {}
@@ -544,48 +527,42 @@
         valeDialog.value = true;
     };
 
-
     const novoColaborador = () => {
         colaboradorSelecionado.value = {'pix':{}};
         submitted.value = false;
         colaboradorDialog.value = true;
     };
 
-
     const editarColaborador = (colaborador) => {
         colaboradorSelecionado.value = JSON.parse(JSON.stringify(colaborador));
+        colaboradorSelecionado.value.dataNascimento = util.formatData(colaboradorSelecionado.value.dataNascimento);
         //colaboradorSelecionado.value = {...colaborador};
         colaboradorDialog.value = true;
     };
 
-
     const editarVale = (vale) => {
-        valeSelecionado.value = {...vale};
+        valeSelecionado.value = JSON.parse(JSON.stringify(vale));
 
         colaboradorSelecionado.value = {...colaboradores.value.find(colab => colab.id === valeSelecionado.value.colaboradorId)};
 
-        valeSelecionado.value.valor = floatParaReal(valeSelecionado.value.valor);
+        valeSelecionado.value.valor = util.floatParaReal(valeSelecionado.value.valor);
+        valeSelecionado.value.data = util.formatData(valeSelecionado.value.data);
 
         valeDialog.value = true;
     };
-
 
     const confirmDeleteColaborador = (colaborador) => {
         colaboradorSelecionado.value = {...colaborador};
         deleteColaboradorDialog.value = true;
     };
 
-
     const confirmDeleteVale = (vale) => {
         valeSelecionado.value = {...vale};
 
-        const colaboradorEncontrado = colaboradores.value.find(colab => colab.id === valeSelecionado.value.colaboradorId);
-
-        colaboradorSelecionado.value = {...colaboradorEncontrado};
+        colaboradorSelecionado.value = {...colaboradores.value.find(colab => colab.id === valeSelecionado.value.colaboradorId)};
 
         deleteValeDialog.value = true;
     };
-
 
     const deletarColaborador = () => {
         colaboradorService.deletarColaborador(colaboradorSelecionado.value.id)
@@ -599,7 +576,6 @@
         deleteColaboradorDialog.value = false;
         colaboradorSelecionado.value = {};
     };
-
 
     const deletarVale = () => {
         valeService.deletarVale(valeSelecionado.value.id)
@@ -615,7 +591,6 @@
         colaboradorSelecionado.value = {};
     };
 
-
     const findIndexById = (id) => {
         let index = -1;
         for (let i = 0; i < colaboradores.value.length; i++) {
@@ -628,16 +603,13 @@
         return index;
     };
 
-
     const exportCSV = () => {
         dt.value.exportCSV();
     };
 
-
     const confirmDeleteSelected = () => {
         deleteColaboradoresDialog.value = true;
     };
-
 
     const deletarColaboradoresSelecionados = async () => {
         try {
@@ -655,78 +627,27 @@
         }
     };
 
-
-    const totalValesColaborador = async () => {
+    const totalValesColaborador = () => {
         for (const colaborador of colaboradores.value) {
-            let total = 0;
-            try {
-                const data = await colaboradorService.getValesColaborador(colaborador.id);
-                colaborador.vales = data;
-                colaborador.vales.forEach(vale => {
-                    total += vale.valor;
-                });
-                colaborador.totalVales = formatCurrency(total);
-            } catch (error) {
-                console.error('Erro ao obter colaboradores:', error);
-            }
+            colaboradorService.getValesColaborador(colaborador.id)
+                .then((data) => (colaborador.vales = data))
+                .catch((error) => (console.error('Erro ao obter vales:', error)));
         }
     };
 
-
-  /*   const totalValesColaborador = () => {
-        colaboradores.value.forEach(colaborador => {
-            let total = 0;
-
+/////buguei kkkkkkk
+    /* const totalValesColaborador = () => {
+        for (const colaborador of colaboradores.value) {
             colaboradorService.getValesColaborador(colaborador.id)
                 .then((data) => (colaborador.vales = data))
-                .then(() => {
-                    colaborador.vales.forEach(vale => {
-                        total += vale.valor;
-                    })
-                })
-                .catch((error) => (console.error('Erro ao obter colaboradores:', error)));
-            colaborador.totalVales = formatCurrency(total);
-        });
-    }
- */
+                .then(() => (totalValesColaborador()))
+                .catch((error) => (console.error('Erro ao obter vales:', error)));
+        }
+    }; */
+
 
     const formatValeInput = () => {
-        valeSelecionado.value.valor = formatMoneyInput(valeSelecionado.value.valor);
-    }
-
-
-    const formatMoneyInput = (value) => {
-        var newValue = value.replace(/[^\d]/g, '');
-
-        newValue = newValue.replace(/^0+/, '');
-
-        while (newValue.length < 3) {
-            newValue = '0' + newValue;
-        }
-
-        var integerPart = newValue.slice(0, -2) || '0';
-        var decimalPart = newValue.slice(-2);
-
-        newValue = 'R$ ' + integerPart + ',' + decimalPart;
-
-        return newValue;
-    }
-
-
-    function realParaFloat(valorReal) {
-        const valorSemSimbolo = valorReal.replace(/[^\d,]/g, '');
-        const valorComPonto = valorSemSimbolo.replace(',', '.');
-        return parseFloat(valorComPonto);
-    }
-
-
-    function floatParaReal(valorFloat) {
-        const valorFormatado = parseFloat(valorFloat).toFixed(2);
-        const partes = valorFormatado.split('.');
-        const parteInteira = partes[0].split('').reverse().reduce((acc, num, i) => {
-            return num + (i && i % 3 === 0 ? '.' : '') + acc;
-        }, '');
-        return 'R$ ' + parteInteira + ',' + partes[1];
+        valeSelecionado.value.valor = util.formatMoneyInput(valeSelecionado.value.valor);
     }
 
 </script>
