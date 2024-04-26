@@ -79,13 +79,13 @@
 
                         <div class="field flex flex-column flex-grow-1">
                             <label for="entregadores">Entregador</label>
-                            <Dropdown :disabled="entregadores == null" id="entregadores" v-model="entregadorSelecionado" :options="entregadores" optionValue="entregador" optionLabel="nome" placeholder="Selecione"
+                            <Dropdown :disabled="entregadores == null || entregadores.length < 1" id="entregadores" v-model="entregadorSelecionado" :options="entregadores" optionValue="entregador" optionLabel="nome" placeholder="Selecione"
                                 autofocus :invalid="submitted && !entregadorSelecionado"/>
                             <small class="p-error" v-if="submitted && !entregadorSelecionado">Entregador é obrigatório.</small>
                         </div>
 
                         <div class="field">
-                            <Button class="w-15rem" :disabled="entregadores == null" label="Calcular Total" icon="pi pi-dollar" severity="success" @click="realizarAcerto" />
+                            <Button class="w-15rem" :disabled="entregadores == null || entregadores.length < 1" label="Calcular Total" icon="pi pi-dollar" severity="success" @click="realizarAcerto" />
                         </div>
 
                     </div>
@@ -193,13 +193,16 @@ import { EntregadorService } from '@/service/EntregadorService';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
 import { onBeforeMount, onMounted, ref } from 'vue';
+import { Util } from '@/service/Util';
 
+const util = new Util();
 const entregadorService = new EntregadorService();
 
 const toast = useToast();
 const filters = ref({});
 const dt = ref();
 const acertoDialog = ref(false);
+const submitted = ref(false);
 
 const entregadores = ref();
 const acertos = ref();
@@ -237,21 +240,27 @@ const initFilters = () => {
 
 const novoAcerto = () => {
     acertoDialog.value = true;
+    submitted.value = false;
 }
 
 const buscarEntregadores = () => {
-    entregadorService.getEntregadoresPorData(dataFormatada(dataInicio.value), dataFormatada(dataFim.value))
-            .then((data) => (entregadores.value = data))
-            .then(() => {
-                if (entregadores.value) {
-                    toast.add({severity:'warn', summary: 'Nenhum entregador encontrado', detail: 'Não foi possível encontrar entregadores no período especificado', life: 3000});
-                } else {
-                    toast.add({severity:'info', summary: `${entregadores.value.length} entregadores encontrados`, detail: 'Selecione um entregador para prosseguir', life: 3000});
-                }
-            })
-            .catch((error) => {
-                toast.add({severity:'error', summary: `Erro`, detail: 'Ocorreu um erro ao processar a solicitação', life: 3000});
-            });
+    submitted.value = true;
+
+    if(dataInicio.value && dataFim.value) {
+
+        entregadorService.getEntregadoresPorData(util.formatDateToLocalDate(dataInicio.value), util.formatDateToLocalDate(dataFim.value))
+                .then((data) => (entregadores.value = data))
+                .then(() => {
+                    if (entregadores.value) {
+                        toast.add({severity:'warn', summary: 'Nenhum entregador encontrado', detail: 'Não foi possível encontrar entregadores no período especificado', life: 3000});
+                    } else {
+                        toast.add({severity:'info', summary: `${entregadores.value.length} entregadores encontrados`, detail: 'Selecione um entregador para prosseguir', life: 3000});
+                    }
+                })
+                .catch((error) => {
+                    toast.add({severity:'error', summary: `Erro`, detail: 'Ocorreu um erro ao processar a solicitação', life: 3000});
+                });
+    }
 }
 
 const realizarAcerto = () => {
@@ -261,6 +270,7 @@ const realizarAcerto = () => {
 
 const hideAcertoDialog = () => {
     acertoDialog.value = false;
+    submitted.value = false;
 }
 
 const copyValeToClipboard = () => {
@@ -272,19 +282,6 @@ const copyValeToClipboard = () => {
 
     toast.add({severity:'info', summary: 'Recibo copiado', detail: 'Recibo copiado para a área de transferência.', life: 3000});
 }
-
-
-const dataFormatada = (data) => {
-    const year = data.getFullYear();
-    const month = (data.getMonth() + 1).toString().padStart(2, '0');
-    const day = data.getDate().toString().padStart(2, '0');
-
-    const dataFormatada = `${year}-${month}-${day}`;
-
-    return dataFormatada;
-}
-
-
 
 
 /* public void apagarMovimento() {

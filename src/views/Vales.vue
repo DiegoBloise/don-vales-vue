@@ -198,7 +198,7 @@
             valeSelecionado.value.valor = util.realParaFloat(valeSelecionado.value.valor);
 
             if(valeSelecionado.value.data) {
-                valeSelecionado.value.data = util.formatLocalDate(valeSelecionado.value.data);
+                valeSelecionado.value.data = util.formatStringToLocalDate(valeSelecionado.value.data);
             }
 
             if (valeSelecionado.value.id) {

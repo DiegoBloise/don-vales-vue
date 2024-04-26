@@ -43,7 +43,8 @@ export class Util {
         return dataFormatada;
     }
 
-    formatLocalDate(data) {
+    formatStringToLocalDate(data) {
+        console.log(data)
         const partes = data.split('/');
 
         const dia = partes[0];
@@ -53,6 +54,10 @@ export class Util {
         const dataFormatada = `${ano}-${mes}-${dia}`;
 
         return dataFormatada;
+    }
+
+    formatDateToLocalDate(data) {
+        return data.toISOString().substring(0,10);
     }
 
     formatCurrency(value) {
