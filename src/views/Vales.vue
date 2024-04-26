@@ -146,7 +146,7 @@
     const colaboradorSelecionado = ref();
     const valeSelecionado = ref();
 
-    const isAdmin = ref(true);
+    const isAdmin = ref(false);
 
     const filters = ref({});
     const submitted = ref(false);

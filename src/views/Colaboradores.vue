@@ -82,6 +82,8 @@
 
             <Column field="telefone" header="Telefone" sortable style="min-width:16rem"></Column>
 
+            <Column field="tipo" header="Tipo" sortable style="min-width:16rem"></Column>
+
             <Column field="pix.tipo" header="Chave Pix" sortable style="min-width:16rem">
                 <template #body="slotProps">
                     <label>{{ slotProps.data.pix.tipo }}</label>
@@ -445,6 +447,7 @@
 
     const setTipoPix = (value) => {
         colaboradorSelecionado.value.pix.tipo = value;
+        colaboradorSelecionado.value.pix.chave = null;
     };
 
 
@@ -469,18 +472,6 @@
             colaboradorSelecionado.value.pix.tipo &&
             colaboradorSelecionado.value.pix.chave
             ) {
-
-            switch (colaboradorSelecionado.value.pix.tipo) {
-                case 'CELULAR':
-                    colaboradorSelecionado.value.pix.chave = `+55${colaboradorSelecionado.value.pix.chave.replace(/\D/g, '')}`;
-                    break;
-                case 'CPF':
-                case 'CNPJ':
-                    colaboradorSelecionado.value.pix.chave = colaboradorSelecionado.value.pix.chave.replace(/\D/g, '');
-                    break;
-                default:
-                    break;
-            }
 
             if (colaboradorSelecionado.value.id) {
                 colaboradorService.atualizarColaborador(colaboradorSelecionado.value.id, colaboradorSelecionado.value)
@@ -555,15 +546,15 @@
 
 
     const novoColaborador = () => {
-        colaboradorSelecionado.value = {};
-        colaboradorSelecionado.value.pix = {"tipo": null};
+        colaboradorSelecionado.value = {'pix':{}};
         submitted.value = false;
         colaboradorDialog.value = true;
     };
 
 
     const editarColaborador = (colaborador) => {
-        colaboradorSelecionado.value = {...colaborador};
+        colaboradorSelecionado.value = JSON.parse(JSON.stringify(colaborador));
+        //colaboradorSelecionado.value = {...colaborador};
         colaboradorDialog.value = true;
     };
 
