@@ -46,6 +46,8 @@
 
             <Column field="colaboradorNome" header="Colaborador" sortable></Column>
 
+            <Column field="tipo" header="Tipo" sortable></Column>
+
             <Column field="valor" header="Valor" sortable>
                 <template #body="slotProps">
                     {{ util.formatCurrency(slotProps.data.valor) }}

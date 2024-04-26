@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { usePrimeVue } from 'primevue/config';
 import { useLayout } from '@/layout/composables/layout';
 
@@ -8,6 +8,10 @@ defineProps({
         type: Boolean,
         default: false
     }
+});
+
+onMounted(() => {
+    decrementScale();
 });
 
 const $primevue = usePrimeVue();

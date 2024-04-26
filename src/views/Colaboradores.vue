@@ -82,14 +82,14 @@
 
             <Column field="telefone" header="Telefone" sortable style="min-width:16rem"></Column>
 
-            <Column field="tipo" header="Tipo" sortable style="min-width:16rem"></Column>
-
             <Column field="pix.tipo" header="Chave Pix" sortable style="min-width:16rem">
                 <template #body="slotProps">
                     <label>{{ slotProps.data.pix.tipo }}</label>
                     <p>{{ slotProps.data.pix.chave }}</p>
                 </template>
             </Column>
+
+            <Column field="tipo" header="Tipo" sortable style="min-width:16rem"></Column>
 
             <Column :exportable="false" style="min-width:8rem">
                 <template #body="slotProps">
@@ -126,7 +126,7 @@
                         <ColumnGroup type="footer">
                             <Row>
                                 <Column footer="Total:" footerStyle="text-align:right" />
-                                <Column colspan="2" :footer="util.formatCurrency(slotProps.data.totalVales)" />
+                                <Column colspan="2" class="text-red-500" :footer="util.formatCurrency(slotProps.data.totalVales)" />
                             </Row>
                         </ColumnGroup>
                     </DataTable>
