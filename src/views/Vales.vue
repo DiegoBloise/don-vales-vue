@@ -78,7 +78,7 @@
             <div>
                 <div class="field">
                     <label for="tipo-vale">Colaborador</label>
-                    <Dropdown :disabled="valeSelecionado.id" id="colaborador" v-model="valeSelecionado.colaboradorId" :options="colaboradores" optionValue="id" optionLabel="nome" placeholder="Selecione"
+                    <Dropdown :disabled="valeSelecionado.id != null" id="colaborador" v-model="valeSelecionado.colaboradorId" :options="colaboradores" optionValue="id" optionLabel="nome" placeholder="Selecione"
                         autofocus :invalid="submitted && !valeSelecionado.colaboradorId"/>
                     <small class="p-error" v-if="submitted && !valeSelecionado.colaboradorId">Colaborador é obrigatório.</small>
                 </div>
@@ -195,12 +195,13 @@
     const salvarVale = () => {
         submitted.value = true;
 
-        if (valeSelecionado.value.valor) {
+        if (valeSelecionado.value.valor &&
+            valeSelecionado.value.colaboradorId) {
 
             valeSelecionado.value.valor = util.realParaFloat(valeSelecionado.value.valor);
 
             if(valeSelecionado.value.data) {
-                valeSelecionado.value.data = util.formatStringToLocalDate(valeSelecionado.value.data);
+                valeSelecionado.value.data = util.parseToLocalDate(valeSelecionado.value.data);
             }
 
             if (valeSelecionado.value.id) {
@@ -242,7 +243,7 @@
         colaboradorSelecionado.value = {...colaboradores.value.find(colab => colab.id === valeSelecionado.value.colaboradorId)};
 
         valeSelecionado.value.valor = util.floatParaReal(valeSelecionado.value.valor);
-        valeSelecionado.value.data = util.formatData(valeSelecionado.value.data);
+        valeSelecionado.value.data = util.parseToDate(valeSelecionado.value.data);
 
         valeDialog.value = true;
     };

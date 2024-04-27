@@ -489,7 +489,7 @@
             valeSelecionado.value.valor = util.realParaFloat(valeSelecionado.value.valor);
 
             if(valeSelecionado.value.data) {
-                valeSelecionado.value.data = util.formatStringToLocalDate(valeSelecionado.value.data);
+                valeSelecionado.value.data = util.parseToLocalDate(valeSelecionado.value.data);
             }
 
             if (valeSelecionado.value.id) {
@@ -535,7 +535,7 @@
 
     const editarColaborador = (colaborador) => {
         colaboradorSelecionado.value = JSON.parse(JSON.stringify(colaborador));
-        colaboradorSelecionado.value.dataNascimento = util.formatData(colaboradorSelecionado.value.dataNascimento);
+        colaboradorSelecionado.value.dataNascimento = util.parseToDate(colaboradorSelecionado.value.dataNascimento);
         //colaboradorSelecionado.value = {...colaborador};
         colaboradorDialog.value = true;
     };
@@ -546,7 +546,7 @@
         colaboradorSelecionado.value = {...colaboradores.value.find(colab => colab.id === valeSelecionado.value.colaboradorId)};
 
         valeSelecionado.value.valor = util.floatParaReal(valeSelecionado.value.valor);
-        valeSelecionado.value.data = util.formatData(valeSelecionado.value.data);
+        valeSelecionado.value.data = util.parseToDate(valeSelecionado.value.data);
 
         valeDialog.value = true;
     };

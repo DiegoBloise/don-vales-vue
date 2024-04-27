@@ -43,21 +43,16 @@ export class Util {
         return dataFormatada;
     }
 
-    formatStringToLocalDate(data) {
-        console.log(data)
-        const partes = data.split('/');
+    parseToDate(dateString) {
+        const [year, month, day] = dateString.split('-').map(Number);
 
-        const dia = partes[0];
-        const mes = partes[1];
-        const ano = partes[2];
+        const date = new Date(year, month - 1, day);
 
-        const dataFormatada = `${ano}-${mes}-${dia}`;
-
-        return dataFormatada;
+        return date;
     }
 
-    formatDateToLocalDate(data) {
-        return data.toISOString().substring(0,10);
+    parseToLocalDate(date) {
+        return date.toISOString().substring(0,10);
     }
 
     formatCurrency(value) {

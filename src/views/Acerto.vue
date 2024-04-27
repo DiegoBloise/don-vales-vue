@@ -9,8 +9,17 @@
             <template #start>
                 <Button label="Novo Acerto" icon="pi pi-plus" severity="success" @click="novoAcerto" />
             </template>
+            <template #end>
+                <FileUpload mode="basic" name="file" url="http://localhost:8080/api/files/upload" accept=".xlsx" @upload="onUpload" />
+            </template>
 
         </Toolbar>
+
+        <FileUpload name="file" url="http://localhost:8080/api/files/upload" @upload="onUpload($event)" accept=".xlsx">
+            <template #empty>
+                <p>Drag and drop files to here to upload.</p>
+            </template>
+        </FileUpload>
 
         <DataTable
             ref="dt"
@@ -238,6 +247,10 @@ const initFilters = () => {
     };
 };
 
+const onUpload = () => {
+    toast.add({ severity:'info', summary: 'Sucesso', detail: 'Registros importados.', life: 3000});
+};
+
 const novoAcerto = () => {
     acertoDialog.value = true;
     submitted.value = false;
@@ -248,7 +261,7 @@ const buscarEntregadores = () => {
 
     if(dataInicio.value && dataFim.value) {
 
-        entregadorService.getEntregadoresPorData(util.formatDateToLocalDate(dataInicio.value), util.formatDateToLocalDate(dataFim.value))
+        entregadorService.getEntregadoresPorData(util.parseToLocalDate(dataInicio.value), util.parseToLocalDate(dataFim.value))
                 .then((data) => (entregadores.value = data))
                 .then(() => {
                     if (entregadores.value) {
