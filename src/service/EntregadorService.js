@@ -1,106 +1,84 @@
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: "http://localhost:8080/api/",
+    headers: {
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json'
+    }
+});
+
 export class EntregadorService {
 
-    getEntregadores() {
-        return fetch('http://localhost:8080/api/entregadores', {
-            headers: { 'Cache-Control': 'no-cache' }
-        })
-        .then((res) => res.json())
-        .catch((error) => {
+    async getEntregadores() {
+        try {
+            const response = await api.get('entregadores');
+            return response.data;
+        } catch (error) {
             console.error('Error fetching entregadores:', error);
             throw error;
-        });
+        }
     }
 
-
-    getEntregadoresPorData(inicio, fim) {
-        return fetch(`http://localhost:8080/api/entregadores/${inicio}/${fim}`, {
-            headers: { 'Cache-Control': 'no-cache' }
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
+    async getEntregadoresPorData(inicio, fim) {
+        try {
+            const response = await api.get(`entregadores/${inicio}/${fim}`);
+            if (response.status === 200) {
+                return response.data;
             }
             throw new Error('Failed to fetching entregadores.');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error fetching entregadores:', error);
             throw error;
-        });
+        }
     }
 
-
-    getValesEntregador(id) {
-        return fetch(`http://localhost:8080/api/entregadores/${id}/vales`, {
-            headers: { 'Cache-Control': 'no-cache' }
-        })
-        .then((res) => res.json())
-        .catch((error) => {
+    async getValesEntregador(id) {
+        try {
+            const response = await api.get(`entregadores/${id}/vales`);
+            return response.data;
+        } catch (error) {
             console.error('Error fetching valesEntregador:', error);
             throw error;
-        });
+        }
     }
 
-
-    salvarEntregador(entregador) {
-        return fetch('http://localhost:8080/api/entregadores', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache'
-            },
-            body: JSON.stringify(entregador)
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
+    async salvarEntregador(entregador) {
+        try {
+            const response = await api.post('entregadores', entregador);
+            if (response.status === 200 || response.status === 201) {
+                return response.data;
             }
             throw new Error('Failed to save entregador.');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error saving entregador:', error);
             throw error;
-        });
+        }
     }
 
-
-    atualizarEntregador(id, entregador) {
-        return fetch(`http://localhost:8080/api/entregadores/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache'
-            },
-            body: JSON.stringify(entregador)
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
+    async atualizarEntregador(id, entregador) {
+        try {
+            const response = await api.put(`entregadores/${id}`, entregador);
+            if (response.status === 200) {
+                return response.data;
             }
             throw new Error('Failed to update entregador.');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error updating entregador:', error);
             throw error;
-        });
+        }
     }
 
-
-    deletarEntregador(id) {
-        return fetch(`http://localhost:8080/api/entregadores/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Cache-Control': 'no-cache'
-            }
-        })
-        .then((res) => {
-            if (res.ok) {
+    async deletarEntregador(id) {
+        try {
+            const response = await api.delete(`entregadores/${id}`);
+            if (response.status === 200) {
                 return;
             }
             throw new Error('Failed to delete entregador.');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error deleting entregador:', error);
             throw error;
-        });
+        }
     }
 }

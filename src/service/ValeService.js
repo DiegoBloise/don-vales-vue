@@ -1,77 +1,61 @@
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: "http://localhost:8080/api/",
+    headers: {
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json'
+    }
+});
+
 export class ValeService {
 
-    getVales() {
-        return fetch('http://localhost:8080/api/vales', {
-            headers: { 'Cache-Control': 'no-cache' }
-        })
-        .then((res) => res.json())
-        .catch((error) => {
+    async getVales() {
+        try {
+            const response = await api.get('vales');
+            return response.data;
+        } catch (error) {
             console.error('Error fetching vales:', error);
             throw error;
-        });
+        }
     }
 
-
-    salvarVale(vale) {
-        return fetch('http://localhost:8080/api/vales', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache'
-            },
-            body: JSON.stringify(vale)
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
+    async salvarVale(vale) {
+        try {
+            const response = await api.post('vales', vale);
+            if (response.status === 200 || response.status === 201) {
+                return response.data;
             }
             throw new Error('Failed to save vale.');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error saving vale:', error);
             throw error;
-        });
+        }
     }
 
-
-    atualizarVale(id, vale) {
-        return fetch(`http://localhost:8080/api/vales/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache'
-            },
-            body: JSON.stringify(vale)
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
+    async atualizarVale(id, vale) {
+        try {
+            const response = await api.put(`vales/${id}`, vale);
+            if (response.status === 200) {
+                return response.data;
             }
             throw new Error('Failed to update vale.');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error updating vale:', error);
             throw error;
-        });
+        }
     }
 
-
-    deletarVale(id) {
-        return fetch(`http://localhost:8080/api/vales/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Cache-Control': 'no-cache'
-            }
-        })
-        .then((res) => {
-            if (res.ok) {
+    async deletarVale(id) {
+        try {
+            const response = await api.delete(`vales/${id}`);
+            if (response.status === 200) {
                 return;
             }
             throw new Error('Failed to delete vale.');
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error deleting vale:', error);
             throw error;
-        });
+        }
     }
 }

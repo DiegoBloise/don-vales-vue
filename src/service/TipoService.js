@@ -1,35 +1,42 @@
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: "http://localhost:8080/api/",
+    headers: {
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json'
+    }
+});
+
 export class TipoService {
 
-    getTiposColaboradores() {
-        return fetch('http://localhost:8080/api/tipos-colaboradores', {
-            headers: { 'Cache-Control': 'no-cache' }
-        })
-        .then((res) => res.json())
-        .catch((error) => {
+    async getTiposColaboradores() {
+        try {
+            const response = await api.get('tipos-colaboradores');
+            return response.data;
+        } catch (error) {
             console.error('Error fetching tiposColaboradores:', error);
             throw error;
-        });
+        }
     }
 
-    getTiposChavePix() {
-        return fetch('http://localhost:8080/api/tipos-chave-pix', {
-            headers: { 'Cache-Control': 'no-cache' }
-        })
-        .then((res) => res.json())
-        .catch((error) => {
+    async getTiposChavePix() {
+        try {
+            const response = await api.get('tipos-chave-pix');
+            return response.data;
+        } catch (error) {
             console.error('Error fetching tiposChavePix:', error);
             throw error;
-        });
+        }
     }
 
-    getTiposVales() {
-        return fetch('http://localhost:8080/api/tipos-vales', {
-            headers: { 'Cache-Control': 'no-cache' }
-        })
-        .then((res) => res.json())
-        .catch((error) => {
+    async getTiposVales() {
+        try {
+            const response = await api.get('tipos-vales');
+            return response.data;
+        } catch (error) {
             console.error('Error fetching tiposVales:', error);
             throw error;
-        });
+        }
     }
 }

@@ -1,19 +1,51 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import { ref, computed } from 'vue';
+import axios from 'axios';
 import AppConfig from '@/layout/AppConfig.vue';
+import { useToast } from 'primevue/usetoast';
+import { useAuthStore } from '@/store/AuthStore';
+
+///const auth = useAuthStore();
+const toast = useToast();
 
 const { layoutConfig } = useLayout();
 const email = ref('');
 const password = ref('');
 const checked = ref(false);
 
+
 const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
+
+
+/* const loginUser = async () => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/auth/login', {
+      username: email.value,
+      password: password.value
+    });
+
+    const token = response.data.token;
+
+    console.log("TOKEN VALUE: " + token)
+
+    auth.token = token;
+
+    this.$router.push('/colaboradores');
+    console.log('Login bem-sucedido! Token JWT:', token);
+    toast.add({severity:'success', summary: 'Sucesso', detail: 'Login bem-sucedido!', life: 3000});
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+    toast.add({severity:'error', summary: 'Erro', detail: 'Credenciais inválidas.', life: 3000});
+  }
+}; */
+
 </script>
 
 <template>
+    <Toast/>
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
             <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
@@ -39,7 +71,7 @@ const logoUrl = computed(() => {
                             </div>
                             <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
                         </div>
-                        <Button label="Sign In" class="w-full p-3 text-xl"></Button>
+                        <Button label="Sign In" class="w-full p-3 text-xl" @click="loginUser"></Button>
                     </div>
                 </div>
             </div>
