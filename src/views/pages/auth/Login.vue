@@ -5,8 +5,11 @@ import axios from 'axios';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '@/store/AuthStore';
+import { useRouter } from 'vue-router'
 
-///const auth = useAuthStore();
+const router = useRouter();
+
+const auth = useAuthStore();
 const toast = useToast();
 
 const { layoutConfig } = useLayout();
@@ -20,27 +23,31 @@ const logoUrl = computed(() => {
 });
 
 
-/* const loginUser = async () => {
+const loginUser = () => {
   try {
-    const response = await axios.post('http://localhost:8080/api/auth/login', {
+    axios.post('http://localhost:8080/api/auth/login', {
       username: email.value,
       password: password.value
-    });
+    })
+    .then((response) => {
+        const token = response.data.token
 
-    const token = response.data.token;
+        auth.$patch({token:token});
 
-    console.log("TOKEN VALUE: " + token)
+        localStorage.setItem('token', token);
+    })
+    .then(() => {
+        router.push('/')
+    })
+    .catch((error) => {
+        console.error(error);
+    })
 
-    auth.token = token;
-
-    this.$router.push('/colaboradores');
-    console.log('Login bem-sucedido! Token JWT:', token);
-    toast.add({severity:'success', summary: 'Sucesso', detail: 'Login bem-sucedido!', life: 3000});
   } catch (error) {
     console.error('Erro ao fazer login:', error);
     toast.add({severity:'error', summary: 'Erro', detail: 'Credenciais inválidas.', life: 3000});
   }
-}; */
+};
 
 </script>
 

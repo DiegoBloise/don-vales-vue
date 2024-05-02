@@ -1,16 +1,8 @@
-import axios from "axios";
-
-const api = axios.create({
-    baseURL: "http://localhost:8080/api/",
-    headers: {
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'application/json'
-    }
-});
+import api from "./api";
 
 export class ColaboradorService {
 
-    async getColaboradores() {
+    async getColaboradores() { 
         try {
             const response = await api.get('colaboradores');
             return response.data;

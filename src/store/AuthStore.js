@@ -1,35 +1,43 @@
-import { defineStore } from 'pinia'
 import jwt from 'jsonwebtoken';
+import { defineStore } from 'pinia';
+import { computed } from 'vue';
 
 
-export const useAuthStore = defineStore('auth', {
+export const useAuthStore = defineStore('auth', () => {
 
-    state: () => {
-        return {
-            token: ''
-        };
-    },
+    const token = computed(() => localStorage.getItem("token"))
 
-    actions: () => {
+    function logout() {
+        this.$patch({
+            token: null
+        })
+    }
 
-    },
+    function isAdmin() {
+        const decodedToken = jwt.decode(state.token);
 
-    getters: {
-        isAdmin: (state) => {
-            try {
-                const decodedToken = jwt.decode(state.token);
-
-                if (decodedToken && decodedToken.role) {
-                    var userRole = decodedToken.role;
-                    return userRole === 'ADMIN';
-                } else {
-                    return null;
-                }
-
-            } catch (error) {
-                console.error('Erro ao decodificar o token JWT:', error);
-                return null;
-            }
+        if (decodedToken && decodedToken.role) {
+            var userRole = decodedToken.role;
+            return userRole === 'ADMIN';
+        } else {
+            return false;
         }
     }
-});
+
+    function getTokenObject() {
+        const decodedToken = jwt.decode(state.token);
+
+        if (decodedToken) {
+            console.log("DECODED: " + decodedToken)
+            return decodedToken;
+        }
+    }
+
+
+    return {
+        token,
+        logout,
+        isAdmin,
+        getTokenObject
+    }
+})
