@@ -1,4 +1,5 @@
-import jwt from 'jsonwebtoken';
+/* eslint-disable prettier/prettier */
+import { jwtDecode } from "jwt-decode";
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
 
@@ -14,7 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     function isAdmin() {
-        const decodedToken = jwt.decode(state.token);
+        const decodedToken = jwtDecode(token);
 
         if (decodedToken && decodedToken.role) {
             var userRole = decodedToken.role;
@@ -25,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     function getTokenObject() {
-        const decodedToken = jwt.decode(state.token);
+        const decodedToken = jwtDecode(token);
 
         if (decodedToken) {
             console.log("DECODED: " + decodedToken)
