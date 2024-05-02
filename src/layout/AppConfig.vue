@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted} from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { usePrimeVue } from 'primevue/config';
 import { useLayout } from '@/layout/composables/layout';
 
@@ -42,7 +42,7 @@ const onChangeTheme = (theme, mode) => {
     });
 };
 const fixedScale = () => {
-    layoutConfig.scale.value = 13
+    layoutConfig.scale.value = 13;
     setScale(layoutConfig.scale.value);
     applyScale();
 };

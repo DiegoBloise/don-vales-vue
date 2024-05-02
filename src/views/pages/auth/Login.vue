@@ -5,7 +5,7 @@ import axios from 'axios';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '@/store/AuthStore';
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
@@ -17,42 +17,39 @@ const email = ref('');
 const password = ref('');
 const checked = ref(false);
 
-
 const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 
-
 const loginUser = () => {
-  try {
-    axios.post('http://localhost:8080/api/auth/login', {
-      username: email.value,
-      password: password.value
-    })
-    .then((response) => {
-        const token = response.data.token
+    try {
+        axios
+            .post('http://localhost:8080/api/auth/login', {
+                username: email.value,
+                password: password.value
+            })
+            .then((response) => {
+                const token = response.data.token;
 
-        auth.$patch({token:token});
+                auth.$patch({ token: token });
 
-        localStorage.setItem('token', token);
-    })
-    .then(() => {
-        router.push('/')
-    })
-    .catch((error) => {
-        console.error(error);
-    })
-
-  } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    toast.add({severity:'error', summary: 'Erro', detail: 'Credenciais inválidas.', life: 3000});
-  }
+                localStorage.setItem('token', token);
+            })
+            .then(() => {
+                router.push('/');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    } catch (error) {
+        console.error('Erro ao fazer login:', error);
+        toast.add({ severity: 'error', summary: 'Erro', detail: 'Credenciais inválidas.', life: 3000 });
+    }
 };
-
 </script>
 
 <template>
-    <Toast/>
+    <Toast />
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
             <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
