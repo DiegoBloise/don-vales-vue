@@ -6,6 +6,9 @@ import { ValeService } from '@/service/ValeService';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
 import { onBeforeMount, onMounted, ref } from 'vue';
+import { useAuthStore } from '@/store/AuthStore';
+
+const auth = useAuthStore();
 
 const toast = useToast();
 
@@ -29,8 +32,6 @@ const deleteColaboradoresDialog = ref(false);
 const colaboradorSelecionado = ref();
 const valeSelecionado = ref();
 const colaboradoresSelecionados = ref();
-
-const isAdmin = ref(true);
 
 const filters = ref({});
 const submitted = ref(false);
@@ -204,6 +205,8 @@ const editarVale = (vale) => {
     valeSelecionado.value.valor = util.floatParaReal(valeSelecionado.value.valor);
     valeSelecionado.value.data = util.parseToDate(valeSelecionado.value.data);
 
+    console.log(valeSelecionado.value)
+
     valeDialog.value = true;
 };
 
@@ -306,12 +309,12 @@ const formatValeInput = () => {
         <Toolbar class="mb-4">
             <template #start>
                 <Button label="Novo Colaborador" icon="pi pi-plus" severity="success" class="mr-2" @click="novoColaborador" />
-                <Button v-if="isAdmin" label="Remover" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!colaboradoresSelecionados || !colaboradoresSelecionados.length" />
+                <Button v-if="auth.isAdmin()" label="Remover" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!colaboradoresSelecionados || !colaboradoresSelecionados.length" />
             </template>
 
             <template #end>
                 <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Importar" chooseLabel="Importar" class="mr-2 inline-block" />
-                <Button v-if="isAdmin" label="Exportar" icon="pi pi-download" severity="help" @click="exportCSV($event)" />
+                <Button v-if="auth.isAdmin()" label="Exportar" icon="pi pi-download" severity="help" @click="exportCSV($event)" />
             </template>
         </Toolbar>
 
@@ -347,7 +350,7 @@ const formatValeInput = () => {
 
             <Column expander style="width: 5rem" />
 
-            <Column v-if="isAdmin" selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
+            <Column v-if="auth.isAdmin()" selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
 
             <Column field="nome" header="Nome" sortable style="min-width: 16rem"></Column>
 
@@ -365,8 +368,8 @@ const formatValeInput = () => {
             <Column :exportable="false" style="min-width: 8rem">
                 <template #body="slotProps">
                     <Button icon="pi pi-ticket" outlined rounded class="mr-2" @click="novoVale(slotProps.data)" />
-                    <Button v-if="isAdmin" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarColaborador(slotProps.data)" />
-                    <Button v-if="isAdmin" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteColaborador(slotProps.data)" />
+                    <Button v-if="auth.isAdmin()" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarColaborador(slotProps.data)" />
+                    <Button v-if="auth.isAdmin()" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteColaborador(slotProps.data)" />
                 </template>
             </Column>
 
@@ -389,8 +392,8 @@ const formatValeInput = () => {
                         <Column :exportable="false" style="min-width: 8rem">
                             <template #body="slotProps">
                                 <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="util.todo" />
-                                <Button v-if="isAdmin" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
-                                <Button v-if="isAdmin" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
+                                <Button v-if="auth.isAdmin()" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
+                                <Button v-if="auth.isAdmin()" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
                             </template>
                         </Column>
 
@@ -519,7 +522,7 @@ const formatValeInput = () => {
                 </p>
             </div>
 
-            <div v-if="isAdmin" class="field">
+            <div v-if="auth.isAdmin()" class="field">
                 <label for="data-vale">Data do Vale</label>
                 <Calendar :disabled="true" v-model="valeSelecionado.data" showIcon :showOnFocus="false" dateFormat="dd/mm/yy" inputId="data-vale" autofocus :invalid="submitted && !valeSelecionado.data" />
                 <small class="p-error" v-if="submitted && !valeSelecionado.data">Data do vale é obrigatório.</small>
@@ -531,7 +534,7 @@ const formatValeInput = () => {
                 <small class="p-error" v-if="submitted && !valeSelecionado.valor">Valor do vale é obrigatório.</small>
             </div>
 
-            <div v-if="isAdmin" class="field">
+            <div v-if="auth.isAdmin()" class="field">
                 <label for="tipo-vale">Tipo de Vale</label>
                 <Dropdown id="tipo-vale" v-model="valeSelecionado.tipo" :options="tiposVales" optionValue="tipo" optionLabel="descricao" placeholder="Selecione" autofocus :invalid="submitted && !valeSelecionado.tipo" />
                 <small class="p-error" v-if="submitted && !valeSelecionado.tipo">Tipo de vale é obrigatório.</small>
