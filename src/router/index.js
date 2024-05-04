@@ -217,7 +217,7 @@ const router = createRouter({
     ]
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
     const auth = useAuthStore();
 
     if (to.meta.requiresAuth && !auth.isLoggedIn()) {

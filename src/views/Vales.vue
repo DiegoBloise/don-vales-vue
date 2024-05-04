@@ -6,6 +6,9 @@ import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { Util } from '@/service/Util';
+import { useAuthStore } from '@/store/AuthStore';
+
+const auth = useAuthStore();
 
 const toast = useToast();
 
@@ -24,8 +27,6 @@ const valeDialog = ref(false);
 const deleteValeDialog = ref(false);
 const colaboradorSelecionado = ref();
 const valeSelecionado = ref();
-
-const isAdmin = ref(true);
 
 const filters = ref({});
 const submitted = ref(false);
@@ -200,8 +201,8 @@ const formatValeInput = () => {
             <Column :exportable="false" style="min-width: 8rem">
                 <template #body="slotProps">
                     <Button icon="pi pi-print" outlined rounded severity="help" class="mr-2" @click="util.todo" />
-                    <Button v-if="isAdmin" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
-                    <Button v-if="isAdmin" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
+                    <Button v-if="auth.isAdmin()" icon="pi pi-pencil" outlined rounded severity="warning" class="mr-2" @click="editarVale(slotProps.data)" />
+                    <Button v-if="auth.isAdmin()" icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteVale(slotProps.data)" />
                 </template>
             </Column>
         </DataTable>
@@ -225,7 +226,7 @@ const formatValeInput = () => {
                 <small class="p-error" v-if="submitted && !valeSelecionado.colaboradorId">Colaborador é obrigatório.</small>
             </div>
 
-            <div v-if="isAdmin" class="field">
+            <div v-if="auth.isAdmin()" class="field">
                 <label for="data-vale">Data do Vale</label>
                 <Calendar :disabled="true" v-model="valeSelecionado.data" showIcon :showOnFocus="false" dateFormat="dd/mm/yy" inputId="data-vale" autofocus :invalid="submitted && !valeSelecionado.data" />
                 <small class="p-error" v-if="submitted && !valeSelecionado.data">Data do vale é obrigatório.</small>
@@ -237,7 +238,7 @@ const formatValeInput = () => {
                 <small class="p-error" v-if="submitted && !valeSelecionado.valor">Valor do vale é obrigatório.</small>
             </div>
 
-            <div v-if="isAdmin" class="field">
+            <div v-if="auth.isAdmin()" class="field">
                 <label for="tipo-vale">Tipo de Vale</label>
                 <Dropdown id="tipo-vale" v-model="valeSelecionado.tipo" :options="tiposVales" optionValue="tipo" optionLabel="descricao" placeholder="Selecione" autofocus :invalid="submitted && !valeSelecionado.tipo" />
                 <small class="p-error" v-if="submitted && !valeSelecionado.tipo">Tipo de vale é obrigatório.</small>
@@ -250,7 +251,7 @@ const formatValeInput = () => {
         </template>
     </Dialog>
 
-    <Dialog v-if="isAdmin" v-model:visible="deleteValeDialog" :style="{ width: '450px' }" header="Confirmação" :modal="true">
+    <Dialog v-if="auth.isAdmin()" v-model:visible="deleteValeDialog" :style="{ width: '450px' }" header="Confirmação" :modal="true">
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
             <span v-if="valeSelecionado"

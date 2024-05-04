@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
     const token = ref(localStorage.getItem("token"));
 
     function logout() {
+        localStorage.removeItem("token");
         token.value = null;
     }
 

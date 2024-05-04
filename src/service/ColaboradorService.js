@@ -1,8 +1,7 @@
-import api from "./api";
+import api from './api';
 
 export class ColaboradorService {
-
-    async getColaboradores() { 
+    async getColaboradores() {
         try {
             const response = await api.get('colaboradores');
             return response.data;
