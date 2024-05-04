@@ -205,8 +205,6 @@ const editarVale = (vale) => {
     valeSelecionado.value.valor = util.floatParaReal(valeSelecionado.value.valor);
     valeSelecionado.value.data = util.parseToDate(valeSelecionado.value.data);
 
-    console.log(valeSelecionado.value)
-
     valeDialog.value = true;
 };
 
