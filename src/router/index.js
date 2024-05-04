@@ -217,11 +217,15 @@ const router = createRouter({
     ]
 });
 
-router.beforeEach((to) => {
+router.beforeEach((to, from) => {
     const auth = useAuthStore();
 
     if (to.meta.requiresAuth && !auth.isLoggedIn()) {
         return { name: 'login' };
+    }
+
+    if (to.name === 'login' && auth.isLoggedIn()) {
+        return { name: from.name };
     }
 });
 
