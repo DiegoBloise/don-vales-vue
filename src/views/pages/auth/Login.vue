@@ -2,7 +2,7 @@
 /* import { useLayout } from '@/layout/composables/layout'; */
 import { ref } from 'vue';
 import axios from 'axios';
-import AppConfig from '@/layout/AppConfig.vue';
+/* import AppConfig from '@/layout/AppConfig.vue'; */
 import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '@/store/AuthStore';
 import { useRouter } from 'vue-router';
@@ -79,7 +79,7 @@ const loginUser = () => {
             </div>
         </div>
     </div>
-    <AppConfig simple />
+    <!-- <AppConfig simple /> -->
 </template>
 
 <style scoped>
