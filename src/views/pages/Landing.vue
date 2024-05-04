@@ -65,7 +65,7 @@ const logoUrl = computed(() => {
                     <Button label="Get Started" class="p-button-rounded text-xl border-none mt-5 bg-blue-500 font-normal text-white line-height-3 px-3"></Button>
                 </div>
                 <div class="flex justify-content-center md:justify-content-end">
-                    <img src="/demo/images/landing/screen-1.png" alt="Hero Image" class="w-9 md:w-auto" />
+                    <img src="/images/landing/screen-1.png" alt="Hero Image" class="w-9 md:w-auto" />
                 </div>
             </div>
 
@@ -212,7 +212,7 @@ const logoUrl = computed(() => {
                             <p class="text-gray-900 sm:line-height-2 md:line-height-4 text-2xl mt-4" style="max-width: 800px">
                                 “Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.”
                             </p>
-                            <img src="/demo/images/landing/peak-logo.svg" class="mt-4" alt="Company logo" />
+                            <img src="/images/landing/peak-logo.svg" class="mt-4" alt="Company logo" />
                         </div>
                     </div>
                 </div>
@@ -226,7 +226,7 @@ const logoUrl = computed(() => {
 
                 <div class="grid mt-8 pb-2 md:pb-8">
                     <div class="flex justify-content-center col-12 lg:col-6 bg-purple-100 p-0 flex-order-1 lg:flex-order-0" style="border-radius: 8px">
-                        <img src="/demo/images/landing/mockup.svg" class="w-11" alt="mockup mobile" />
+                        <img src="/images/landing/mockup.svg" class="w-11" alt="mockup mobile" />
                     </div>
 
                     <div class="col-12 lg:col-6 my-auto flex flex-column lg:align-items-end text-center lg:text-right">
@@ -252,7 +252,7 @@ const logoUrl = computed(() => {
                     </div>
 
                     <div class="flex justify-content-end flex-order-1 sm:flex-order-2 col-12 lg:col-6 bg-yellow-100 p-0" style="border-radius: 8px">
-                        <img src="/demo/images/landing/mockup-desktop.svg" class="w-11" alt="mockup" />
+                        <img src="/images/landing/mockup-desktop.svg" class="w-11" alt="mockup" />
                     </div>
                 </div>
             </div>
@@ -267,7 +267,7 @@ const logoUrl = computed(() => {
                     <div class="col-12 lg:col-4 p-0 md:p-3">
                         <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Free</h3>
-                            <img src="/demo/images/landing/free.svg" class="w-10 h-10 mx-auto" alt="free" />
+                            <img src="/images/landing/free.svg" class="w-10 h-10 mx-auto" alt="free" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$0</span>
                                 <span class="text-600">per month</span>
@@ -298,7 +298,7 @@ const logoUrl = computed(() => {
                     <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
                         <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Startup</h3>
-                            <img src="/demo/images/landing/startup.svg" class="w-10 h-10 mx-auto" alt="startup" />
+                            <img src="/images/landing/startup.svg" class="w-10 h-10 mx-auto" alt="startup" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$1</span>
                                 <span class="text-600">per month</span>
@@ -329,7 +329,7 @@ const logoUrl = computed(() => {
                     <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
                         <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Enterprise</h3>
-                            <img src="/demo/images/landing/enterprise.svg" class="w-10 h-10 mx-auto" alt="enterprise" />
+                            <img src="/images/landing/enterprise.svg" class="w-10 h-10 mx-auto" alt="enterprise" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$999</span>
                                 <span class="text-600">per month</span>
@@ -389,7 +389,7 @@ const logoUrl = computed(() => {
                             <div class="col-12 md:col-3 mt-4 md:mt-0">
                                 <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Community</h4>
                                 <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Discord</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Events<img src="/demo/images/landing/new-badge.svg" class="ml-2" /></a>
+                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Events<img src="/images/landing/new-badge.svg" class="ml-2" /></a>
                                 <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">FAQ</a>
                                 <a class="line-height-3 text-xl block cursor-pointer text-700">Blog</a>
                             </div>
