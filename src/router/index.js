@@ -68,6 +68,10 @@ router.beforeEach((to, from) => {
     if (to.name === 'login' && auth.isLoggedIn()) {
         return { name: from.name };
     }
+
+    if (to.meta.requiresAdminRole && !auth.isAdmin()) {
+        return { name: 'accessDenied' };
+    }
 });
 
 export default router;
