@@ -1,6 +1,6 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
-import { ref, computed } from 'vue';
+/* import { useLayout } from '@/layout/composables/layout'; */
+import { ref } from 'vue';
 import axios from 'axios';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useToast } from 'primevue/usetoast';
@@ -12,14 +12,14 @@ const router = useRouter();
 const auth = useAuthStore();
 const toast = useToast();
 
-const { layoutConfig } = useLayout();
+/* const { layoutConfig } = useLayout(); */
 const email = ref('');
 const password = ref('');
 const checked = ref(false);
 
-const logoUrl = computed(() => {
+/* const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
-});
+}); */
 
 const loginUser = () => {
     try {
@@ -50,11 +50,11 @@ const loginUser = () => {
     <Toast />
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
-            <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
+            <!-- <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" /> -->
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
                     <div class="text-center mb-5">
-                        <img src="" alt="Image" height="50" class="mb-3" />
+                        <!-- <img src="" alt="Image" height="50" class="mb-3" /> -->
                         <div class="text-900 text-3xl font-medium mb-3">Bem vindo!</div>
                         <span class="text-600 font-medium">Faça o login para continuar</span>
                     </div>
@@ -64,7 +64,7 @@ const loginUser = () => {
                         <InputText id="email1" type="text" placeholder="Usuário" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="email" />
 
                         <label for="password1" class="block text-900 font-medium text-xl mb-2">Senha</label>
-                        <Password id="password1" v-model="password" placeholder="Senha" :toggleMask="true" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
+                        <Password :feedback="false" id="password1" v-model="password" placeholder="Senha" :toggleMask="true" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
 
                         <div class="flex align-items-center justify-content-between mb-5 gap-5">
                             <div class="flex align-items-center">
