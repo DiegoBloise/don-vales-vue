@@ -1,44 +1,57 @@
 /* eslint-disable prettier/prettier */
 import { jwtDecode } from "jwt-decode";
 import { defineStore } from 'pinia';
-import { computed } from 'vue';
-
+import { ref } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
 
-    const token = computed(() => localStorage.getItem("token"))
+    const token = ref(localStorage.getItem("token"));
 
     function logout() {
-        this.$patch({
-            token: null
-        })
+        token.value = null;
+    }
+
+    function isLoggedIn() {
+        return typeof token.value === 'string' && token.value.trim() !== '' && !isTokenExpired();
     }
 
     function isAdmin() {
-        const decodedToken = jwtDecode(token);
+        const decodedToken = getDecodedToken();
+        return decodedToken && decodedToken.role === 'ADMIN';
+    }
 
-        if (decodedToken && decodedToken.role) {
-            var userRole = decodedToken.role;
-            return userRole === 'ADMIN';
-        } else {
-            return false;
+    function isTokenExpired() {
+        const decodedToken = getDecodedToken();
+        if (decodedToken && decodedToken.exp) {
+            const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Tempo atual em segundos
+            return currentTimeInSeconds > decodedToken.exp;
+        }
+        return false;
+    }
+
+    function getDecodedToken() {
+        try {
+            const tokenValue = token.value;
+            if (typeof tokenValue === 'string' && tokenValue.trim() !== '') {
+                return jwtDecode(tokenValue);
+            }
+            return null;
+        } catch (error) {
+            console.error('Erro ao decodificar o token:', error);
+            return null;
         }
     }
 
-    function getTokenObject() {
-        const decodedToken = jwtDecode(token);
-
-        if (decodedToken) {
-            console.log("DECODED: " + decodedToken)
-            return decodedToken;
-        }
+    function setToken(newToken) {
+        localStorage.setItem("token", newToken);
+        token.value = newToken;
     }
-
 
     return {
         token,
         logout,
         isAdmin,
-        getTokenObject
+        isLoggedIn,
+        setToken
     }
-})
+});

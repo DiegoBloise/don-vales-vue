@@ -21,6 +21,14 @@ const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 
+/* const test = () => {
+    console.log('-------------');
+    console.log('admin?: ' + auth.isAdmin());
+    console.log('logged?: ' + auth.isLoggedIn());
+    console.log('token: ' + auth.token);
+    console.log('-------------');
+}; */
+
 const loginUser = () => {
     try {
         axios
@@ -31,9 +39,7 @@ const loginUser = () => {
             .then((response) => {
                 const token = response.data.token;
 
-                auth.$patch({ token: token });
-
-                localStorage.setItem('token', token);
+                auth.setToken(token);
             })
             .then(() => {
                 router.push('/');
@@ -76,6 +82,7 @@ const loginUser = () => {
                             <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
                         </div>
                         <Button label="Sign In" class="w-full p-3 text-xl" @click="loginUser"></Button>
+                        <!-- <Button label="debug" class="w-full p-3 text-xl" @click="test"></Button> -->
                     </div>
                 </div>
             </div>
